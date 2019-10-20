@@ -26,8 +26,8 @@ c
 	common /gridR/T,dt,dx,dy,xlambda,ylambda
 	parameter (lmx=400,lmy=400)
 	dimension U(4,-1:lmx+3,-1:lmy+3),Ul(4,-1:lmx+3,-1:lmy+3)
-	dimension up(4), um(4),du(4),dup(4),dum(4)
-	dimension fc(4),df(4),f(4,0:lmx+1,0:lmy+1),g(4,0:lmx+1,0:lmy+1)
+	real*8 :: up(4), um(4),du(4),dup(4),dum(4)
+	real*8 :: fc(4),df(4),f(4,0:lmx+1,0:lmy+1),g(4,0:lmx+1,0:lmy+1)
 	do j=1,ly+1
 		do i=0,lx+1
 			do k=1,4
@@ -36,7 +36,7 @@ c
 				dum(k)=U(k,i,j)-U(k,i-1,j)
 				dup(k)=U(k,i+2,j)-U(k,i+1,j)
 				du(k)=U(k,i+1,j)-U(k,i,j)
-			end do
+              end do
 			call central(up,um,fc)
 			call diffusiveflux(up,um,du,dup,dum,df)
 			do k=1,4

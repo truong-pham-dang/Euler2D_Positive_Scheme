@@ -20,26 +20,61 @@ c
       common /gridI/lx,ly,lsteps
       common /gridR/T,dt,dx,dy,xlambda,ylambda
       dimension U(4,-1:lmx+3,-1:lmy+3),Ul(4,-1:lmx+3,-1:lmy+3)
+	integer      :: lx,ly,lsteps
+	real*8       :: T,dt,dx,dy,xlambda,ylambda
+	real*8       :: T_simul 
+	character*10 :: cstep
+	real*8, allocatable :: XC(:),YC(:)
       call grid_para
+	ALLOCATE(XC(lx+1),YC(ly+1))
+	XC = 0.0d0
+	YC = 0.0d0
+	DO i = 1, lx+1
+		XC(i) = (i-1) * dx
+	ENDDO
+	DO i = 1, ly+1
+		YC(i) = (i-1) * dy
+	ENDDO
+      U  = 0.0d0
+      Ul = 0.0d0
+	T_simul = 0.0d0
       call initial(U)
-      do l=l,lsteps
-        call evolve(U,Ul)
-        call bdy(Ul)
-        call evolve(Ul,Ul)
-        do j=l,ly+l
-        do i=l,lx+l
-        do k=l,4
-            U(k,i,j)=0.5d0*(U(k,i,j)+Ul(k,i,j))
-        end do
-        end do
-        end do
-        call bdy(U)
-      end do
-      open(10,file='rho.mat',status='unknown')
-      write(10,2000) T,dt,dt/dx,lx,ly
-      write(10,1000) ((U(l,i,j),j=l,ly+l),i=l,lx+l)
-1000  format(f9.4,f9.4,f9.4,f9.4,f9.4)
-2000  format(f9.4,f9.4,f9.4,i5,i5)
+      do l=1,lsteps
+		T_simul = T_simul + dt
+		call evolve(U,Ul)
+		call bdy(Ul)
+		call evolve(Ul,Ul)
+		do j=1,ly+l
+		do i=1,lx+l
+		do k=1,4
+			U(k,i,j)=0.5d0*(U(k,i,j)+Ul(k,i,j))
+		enddo
+		enddo
+		enddo
+		call bdy(U)
+c-----Write solution to Tecplot----------------------------------------
+		if (mod(l,20)==0) then
+			write(*,*) 'T = ',T_simul
+			CALL WRITE_SOLUTION_TECPLOT
+		endif
+      enddo
       stop
+      CONTAINS
+          SUBROUTINE WRITE_SOLUTION_TECPLOT
+          IMPLICIT NONE
+          INTEGER :: I1,J1
+          WRITE(cstep,'(i5.5)') l
+		OPEN(71,FILE='pltflow_'//TRIM(CSTEP)//'.plt') 
+		WRITE(71,*) 'TITLE="EULER_FLOW"' 
+		WRITE(71,*) 'VARIABLES="X","Y","DENSITY"' 
+		WRITE(71,*) 'ZONE T="EULER_FLOW",I=',lx+1,',J=',ly+1,',F=POINT' 
+		DO J1=1,ly+1 
+		DO I1=1,lx+1  
+			WRITE(71,7101) XC(I1),YC(J1),U(1,I1,J1)   
+		ENDDO
+		ENDDO 
+		CLOSE(71) 
+7101  FORMAT(20(1X,F18.8))
+          END SUBROUTINE
       end
 

@@ -21,6 +21,9 @@ c
 	common /gridI/lx,ly,lsteps
 	common /gridR/T,dt,dx,dy,xlambda,ylambda
 	common /para/alpha,beta
+	integer :: lx,ly,lsteps
+	real*8  :: T,dt,dx,dy,xlambda,ylambda
+	real*8  :: alpha,beta
 	write(*,*) ' Enter the Number of Grid Points in x direction '
 	read(*,*) lx
 	write(*,*) ' Enter the Number of Grid Points in y direction '
