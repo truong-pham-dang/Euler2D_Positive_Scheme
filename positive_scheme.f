@@ -19,13 +19,16 @@ c
       parameter (lmx=400,lmy=400)
       common /gridI/lx,ly,lsteps
       common /gridR/T,dt,dx,dy,xlambda,ylambda
+	common /conf/config
       dimension U(4,-1:lmx+3,-1:lmy+3),Ul(4,-1:lmx+3,-1:lmy+3)
 	integer      :: lx,ly,lsteps
+	integer      :: config
 	real*8       :: T,dt,dx,dy,xlambda,ylambda
 	real*8       :: T_simul 
 	character*10 :: cstep
 	real*8, allocatable :: XC(:),YC(:)
       call grid_para
+	call configuration
 	ALLOCATE(XC(lx+1),YC(ly+1))
 	XC = 0.0d0
 	YC = 0.0d0

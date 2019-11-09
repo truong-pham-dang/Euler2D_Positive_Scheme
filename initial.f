@@ -3,12 +3,16 @@
 	parameter (lmx=400,lmy=400)
 	common /gridI/lx,ly,lsteps
       common /gridR/T,dt,dx,dy,xlambda,ylambda
+	common /conf/config
       dimension U(4,-1:lmx+3,-1:lmy+3)
 	real*8, dimension(4) :: vec1,vec2,vec3,vec4
+	integer :: config
 	lx_half=lx/2
 	ly_half=ly/2
+	
 c-----Configuration 3--------------------------------------------------
 c
+	if (config .eq. 3) then
 c-----Initial data-----------------------------------------------------
 c
 c-----First quadrant---------------------------------------------------
@@ -39,6 +43,40 @@ c-----Fourth quadrant--------------------------------------------------
 	v4   = 1.206d0
 	e4   = total_energy(rho4,u4,v4,p4)
 	vec4 = (/ rho4, rho4*u4, rho4*v4, e4/)
+	endif
+c
+	if (config .eq. 5) then
+c-----Initial data-----------------------------------------------------
+c
+c-----First quadrant---------------------------------------------------
+	rho1 = 1.0d0
+	p1   = 1.0d0
+	u1   = -0.75d0
+	v1   = -0.50d0 
+	e1   = total_energy(rho1,u1,v1,p1)
+	vec1 = (/ rho1, rho1*u1, rho1*v1, e1/)
+c-----Second quadrant--------------------------------------------------
+	rho2 = 2.0d0
+	p2   = 1.0d0
+	u2   = -0.75d0
+	v2   = 0.50d0
+	e2   = total_energy(rho2,u2,v2,p2)
+	vec2 = (/ rho2, rho2*u2, rho2*v2, e2/)
+c-----Third quadrant---------------------------------------------------
+	rho3 = 1.0d0
+	p3   = 1.0d0
+	u3   = 0.75d0
+	v3   = 0.50d0
+	e3   = total_energy(rho3,u3,v3,p3)
+	vec3 = (/ rho3, rho3*u3, rho3*v3, e3/)
+c-----Fourth quadrant--------------------------------------------------
+	rho4 = 3.0d0
+	p4   = 1.0d0
+	u4   = 0.75d0
+	v4   = -0.50d0
+	e4   = total_energy(rho4,u4,v4,p4)
+	vec4 = (/ rho4, rho4*u4, rho4*v4, e4/)
+	endif
 c
 c-----Initial solution-------------------------------------------------
 c
